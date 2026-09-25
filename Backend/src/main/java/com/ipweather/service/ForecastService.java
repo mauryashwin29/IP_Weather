@@ -45,20 +45,17 @@ public class ForecastService {
                 + "&forecast_days=5"
                 + "&timezone=auto";
 
-        HttpRequest request =
-                HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .GET()
-                        .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("User-Agent", "IP-Weather/1.0")
+                .header("Accept", "application/json")
+                .GET()
+                .build();
 
         HttpResponse<String> response =
-                httpClient.send(
-                        request,
-                        HttpResponse.BodyHandlers.ofString()
-                );
+                sendWithRetry(request);
 
         if (response.statusCode() != 200) {
-
             throw new IOException(
                     "Forecast API returned HTTP "
                     + response.statusCode()
@@ -66,12 +63,11 @@ public class ForecastService {
         }
 
         JsonObject root =
-                JsonParser.parseString(
-                        response.body()
-                ).getAsJsonObject();
+                JsonParser.parseString(response.body())
+                        .getAsJsonObject();
 
-        if (!root.has("daily") ||
-                root.get("daily").isJsonNull()) {
+        if (!root.has("daily")
+                || root.get("daily").isJsonNull()) {
 
             throw new IOException(
                     "Forecast data is missing."
@@ -99,38 +95,31 @@ public class ForecastService {
                         "weather_code"
                 );
 
-
         List<Forecast> forecast =
                 new ArrayList<>();
 
-
         int numberOfDays =
-                Math.min(
-                        5,
-                        dates.size()
-                );
+                Math.min(5, dates.size());
 
-
-        for (int i = 0;
-             i < numberOfDays;
-             i++) {
+        for (int i = 0; i < numberOfDays; i++) {
 
             String date =
-                    dates.get(i)
-                            .getAsString();
+                    dates.get(i).getAsString();
 
             double maxTemperature =
-                    maxTemperatures.get(i)
+                    maxTemperatures
+                            .get(i)
                             .getAsDouble();
 
             double minTemperature =
-                    minTemperatures.get(i)
+                    minTemperatures
+                            .get(i)
                             .getAsDouble();
 
             int weatherCode =
-                    weatherCodes.get(i)
+                    weatherCodes
+                            .get(i)
                             .getAsInt();
-
 
             Forecast day =
                     new Forecast(
@@ -140,11 +129,51 @@ public class ForecastService {
                             weatherCode
                     );
 
-
             forecast.add(day);
         }
 
-
         return forecast;
+    }
+
+    private HttpResponse<String> sendWithRetry(
+            HttpRequest request)
+            throws IOException, InterruptedException {
+
+        int maxAttempts = 3;
+
+        for (int attempt = 1;
+             attempt <= maxAttempts;
+             attempt++) {
+
+            HttpResponse<String> response =
+                    httpClient.send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            if (response.statusCode() != 429) {
+                return response;
+            }
+
+            if (attempt < maxAttempts) {
+
+                long waitTime =
+                        2000L * attempt;
+
+                System.out.println(
+                        "Open-Meteo returned HTTP 429 "
+                        + "for forecast. Retrying in "
+                        + waitTime
+                        + " ms..."
+                );
+
+                Thread.sleep(waitTime);
+            }
+        }
+
+        return httpClient.send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+        );
     }
 }
