@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Weather Information Dashboard"
+    >
+
+    <title>Weather Information Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="clear-theme">
+
+    <!-- =========================================
+         BACKGROUND
+         ========================================= -->
+
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+    <div class="background-grid"></div>
+
+
+    <!-- =========================================
+         APP
+         ========================================= -->
+
+    <main class="app">
+
+
+        <!-- =====================================
+             HEADER
+             ===================================== -->
+
+        <header class="header">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    ☁
+                </div>
+
+                <div>
+                    <h1>Weatherly</h1>
+
+                    <p>
+                        Weather Information Dashboard
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="header-actions">
+
+                <button
+                    id="unitToggle"
+                    class="unit-toggle"
+                    type="button"
+                    aria-label="Change temperature unit"
+                >
+                    °C
+                </button>
+
+                <button
+                    id="settingsButton"
+                    class="icon-button"
+                    type="button"
+                    aria-label="Settings"
+                >
+                    ⚙
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =====================================
+             SEARCH
+             ===================================== -->
+
+        <section class="search-section">
+
+            <div class="search-box">
+
+                <span class="search-icon">
+                    🔍
+                </span>
+
+                <input
+                    id="cityInput"
+                    type="text"
+                    placeholder="Search for a city..."
+                    autocomplete="off"
+                    aria-label="City name"
+                >
+
+                <button
+                    id="searchButton"
+                    class="search-button"
+                    type="button"
+                >
+                    Search
+                </button>
+
+            </div>
+
+            <div
+                id="searchSuggestions"
+                class="search-suggestions"
+            ></div>
+
+            <div
+                id="errorMessage"
+                class="error-message"
+            ></div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             LOADING
+             ===================================== -->
+
+        <div
+            id="loadingOverlay"
+            class="loading-overlay"
+        >
+
+            <div class="loading-card">
+
+                <div class="loading-spinner"></div>
+
+                <h3>
+                    Fetching weather
+                </h3>
+
+                <p>
+                    Getting the latest information...
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================
+             MAIN WEATHER DASHBOARD
+             ===================================== -->
+
+        <section
+            id="weatherDashboard"
+            class="weather-dashboard hidden"
+        >
+
+
+            <!-- =================================
+                 LOCATION HEADER
+                 ================================= -->
+
+            <div class="location-header">
+
+                <div class="location-info">
+
+                    <span class="location-pin">
+                        📍
+                    </span>
+
+                    <div>
+
+                        <h2 id="cityName">
+                            Mumbai
+                        </h2>
+
+                        <p id="countryName">
+                            India
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="favoriteButton"
+                    class="favorite-button"
+                    type="button"
+                >
+                    ☆
+                    <span>
+                        Add to Favourites
+                    </span>
+                </button>
+
+            </div>
+
+
+
+            <!-- =================================
+                 CURRENT WEATHER HERO
+                 ================================= -->
+
+            <section class="hero-weather">
+
+                <div class="hero-left">
+
+                    <div
+                        id="weatherIcon"
+                        class="weather-icon"
+                    >
+                        ☀️
+                    </div>
+
+                    <div class="hero-condition">
+
+                        <p
+                            id="conditionText"
+                            class="condition-text"
+                        >
+                            Clear Sky
+                        </p>
+
+                        <div class="temperature-row">
+
+                            <span
+                                id="temperature"
+                                class="temperature"
+                            >
+                                --
+                            </span>
+
+                            <span
+                                id="temperatureUnit"
+                                class="temperature-unit"
+                            >
+                                °C
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-details">
+
+                    <div class="high-low">
+
+                        <div>
+                            <span class="detail-label">
+                                HIGH
+                            </span>
+
+                            <strong id="highTemperature">
+                                --°
+                            </strong>
+                        </div>
+
+                        <div class="detail-divider"></div>
+
+                        <div>
+                            <span class="detail-label">
+                                LOW
+                            </span>
+
+                            <strong id="lowTemperature">
+                                --°
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="feels-like">
+
+                        Feels like
+
+                        <strong id="feelsLike">
+                            --°
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+                 BASIC WEATHER DETAILS
+                 ================================= -->
+
+            <section class="details-grid">
+
+
+                <article class="detail-card">
+
+                    <div class="detail-card-icon humidity-icon">
+                        💧
+                    </div>
+
+                    <div class="detail-card-content">
+
+                        <span>
+                            HUMIDITY
+                        </span>
+
+                        <strong id="humidity">
+                            --%
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+
+                <article class="detail-card">
+
+                    <div class="detail-card-icon condition-icon">
+                        ☁️
+                    </div>
+
+                    <div class="detail-card-content">
+
+                        <span>
+                            CONDITION
+                        </span>
+
+                        <strong id="conditionDetail">
+                            --
+                        </strong>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+
+
+            <!-- =================================
+                 5 DAY FORECAST
+                 ================================= -->
+
+            <section class="dashboard-section">
+
+                <div class="section-title">
+
+                    <div>
+                        <span class="section-eyebrow">
+                            EXTENDED FORECAST
+                        </span>
+
+                        <h3>
+                            5-Day Forecast
+                        </h3>
+                    </div>
+
+                    <span class="section-icon">
+                        📅
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="forecastContainer"
+                    class="forecast-list"
+                >
+
+                    <!-- Forecast generated by JavaScript -->
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+                 FAVOURITES
+                 ================================= -->
+
+            <section class="dashboard-section">
+
+                <div class="section-title">
+
+                    <div>
+
+                        <span class="section-eyebrow">
+                            QUICK ACCESS
+                        </span>
+
+                        <h3>
+                            Favourite Cities
+                        </h3>
+
+                    </div>
+
+                    <span class="section-icon">
+                        ⭐
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="favouriteList"
+                    class="city-list"
+                >
+
+                    <div class="empty-state">
+
+                        <span>
+                            ☆
+                        </span>
+
+                        <p>
+                            No favourite cities yet
+                        </p>
+
+                        <small>
+                            Add cities using the star button
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+                 SEARCH HISTORY
+                 ================================= -->
+
+            <section class="dashboard-section">
+
+                <div class="section-title">
+
+                    <div>
+
+                        <span class="section-eyebrow">
+                            RECENT ACTIVITY
+                        </span>
+
+                        <h3>
+                            Search History
+                        </h3>
+
+                    </div>
+
+                    <button
+                        id="clearHistoryButton"
+                        class="text-button"
+                        type="button"
+                    >
+                        Clear
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="historyList"
+                    class="city-list"
+                >
+
+                    <div class="empty-state">
+
+                        <span>
+                            🕘
+                        </span>
+
+                        <p>
+                            No recent searches
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+                 CITY COMPARISON
+                 ================================= -->
+
+            <section class="dashboard-section comparison-section">
+
+                <div class="section-title">
+
+                    <div>
+
+                        <span class="section-eyebrow">
+                            BONUS FEATURE
+                        </span>
+
+                        <h3>
+                            Compare Two Cities
+                        </h3>
+
+                    </div>
+
+                    <span class="section-icon">
+                        ⚖️
+                    </span>
+
+                </div>
+
+
+                <div class="comparison-search">
+
+                    <div class="compare-input-group">
+
+                        <label for="compareCityOne">
+                            City 1
+                        </label>
+
+                        <input
+                            id="compareCityOne"
+                            type="text"
+                            placeholder="Enter first city"
+                        >
+
+                    </div>
+
+
+                    <div class="compare-vs">
+                        VS
+                    </div>
+
+
+                    <div class="compare-input-group">
+
+                        <label for="compareCityTwo">
+                            City 2
+                        </label>
+
+                        <input
+                            id="compareCityTwo"
+                            type="text"
+                            placeholder="Enter second city"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="compareButton"
+                    class="compare-button"
+                    type="button"
+                >
+                    Compare Cities
+                </button>
+
+
+                <div
+                    id="comparisonResult"
+                    class="comparison-result"
+                >
+
+                    <!-- Comparison generated by JavaScript -->
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+                 AUTO REFRESH
+                 ================================= -->
+
+            <section class="refresh-card">
+
+                <div class="refresh-info">
+
+                    <div class="refresh-icon">
+                        🔄
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Auto Refresh
+                        </h3>
+
+                        <p>
+                            Automatically update weather data
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="refresh-controls">
+
+                    <select
+                        id="refreshInterval"
+                        aria-label="Refresh interval"
+                    >
+
+                        <option value="0">
+                            Off
+                        </option>
+
+                        <option value="1">
+                            Every 1 minute
+                        </option>
+
+                        <option value="5" selected>
+                            Every 5 minutes
+                        </option>
+
+                        <option value="10">
+                            Every 10 minutes
+                        </option>
+
+                    </select>
+
+
+                    <div
+                        id="refreshStatus"
+                        class="refresh-status"
+                    >
+                        ● OFF
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+                 FOOTER
+                 ================================= -->
+
+            <footer class="footer">
+
+                <div class="footer-brand">
+
+                    <span>
+                        ☁
+                    </span>
+
+                    <strong>
+                        Weatherly
+                    </strong>
+
+                </div>
+
+                <p>
+                    Weather Information Dashboard
+                </p>
+
+                <p class="footer-note">
+                    Built with Java, HTML, CSS & JavaScript
+                </p>
+
+            </footer>
+
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================================
+         SETTINGS PANEL
+         ========================================= -->
+
+    <aside
+        id="settingsPanel"
+        class="settings-panel"
+    >
+
+        <div class="settings-header">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    PREFERENCES
+                </span>
+
+                <h2>
+                    Settings
+                </h2>
+
+            </div>
+
+            <button
+                id="closeSettingsButton"
+                class="close-button"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="setting-item">
+
+            <div>
+
+                <strong>
+                    Temperature Unit
+                </strong>
+
+                <p>
+                    Choose Celsius or Fahrenheit
+                </p>
+
+            </div>
+
+            <button
+                id="settingsUnitToggle"
+                class="settings-unit-button"
+                type="button"
+            >
+                °C
+            </button>
+
+        </div>
+
+
+        <div class="setting-item">
+
+            <div>
+
+                <strong>
+                    Auto Refresh
+                </strong>
+
+                <p>
+                    Update weather automatically
+                </p>
+
+            </div>
+
+            <select id="settingsRefresh">
+
+                <option value="0">
+                    Off
+                </option>
+
+                <option value="1">
+                    1 min
+                </option>
+
+                <option value="5" selected>
+                    5 min
+                </option>
+
+                <option value="10">
+                    10 min
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="settings-footer">
+
+            <p>
+                Weather Information Dashboard
+            </p>
+
+        </div>
+
+    </aside>
+
+
+    <div
+        id="settingsBackdrop"
+        class="settings-backdrop"
+    ></div>
+
+
+
+    <!-- =========================================
+         JAVASCRIPT
+         ========================================= -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
