@@ -9,7 +9,7 @@
    ========================================================= */
 
 const API_URL =
-    "http://localhost:8080/api/weather";
+    "https://ip-weather.onrender.com/api/weather";
 
 
 /* =========================================================
